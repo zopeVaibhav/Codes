@@ -1,0 +1,119 @@
+#include <iostream>
+#include <unordered_set>
+using namespace std;
+class Set
+{
+private:
+    unordered_set<int> elements;
+
+public:
+    void Add(int element)
+    {
+        elements.insert(element);
+    }
+    void Remove(int element)
+    {
+        elements.erase(element);
+    }
+    bool Contains(int element) const
+    {
+        return elements.count(element) > 0;
+    }
+    int Size() const
+    {
+        return elements.size();
+    }
+    unordered_set<int> GetElements() const
+    {
+        return elements;
+    }
+    Set Intersection(const Set &other) const
+    {
+        Set intersectionSet;
+        for (auto element : elements)
+        {
+            if (other.Contains(element))
+            {
+                intersectionSet.Add(element);
+            }
+        }
+        return intersectionSet;
+    }
+    Set Union(const Set &other) const
+    {
+        Set unionSet;
+        unionSet.elements = elements;
+        unionSet.elements.insert(other.elements.begin(), other.elements.end());
+        return unionSet;
+    }
+    Set Difference(const Set &other) const
+    {
+        Set differenceSet;
+        for (auto element : elements)
+        {
+            if (!other.Contains(element))
+            {
+                differenceSet.Add(element);
+            }
+        }
+        return differenceSet;
+    }
+    bool Subset(const Set &other) const
+    {
+        for (auto element : elements)
+        {
+            if (!other.Contains(element))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+};
+
+int main()
+{
+    Set set1;
+    set1.Add(1);
+    set1.Add(2);
+    set1.Add(3);
+    Set set2;
+    set2.Add(2);
+    set2.Add(3);
+    set2.Add(4);
+    cout << "Set 1: ";
+    for (auto element : set1.GetElements())
+    {
+        cout << element << " ";
+    }
+    cout << endl;
+    cout << "Set 2: ";
+    for (auto element : set2.GetElements())
+    {
+        cout << element << " ";
+    }
+    cout << endl;
+    cout << "Intersection: ";
+    Set intersectionSet = set1.Intersection(set2);
+    for (auto element : intersectionSet.GetElements())
+    {
+        cout << element << " ";
+    }
+    cout << endl;
+    cout << "Union: ";
+    Set unionSet = set1.Union(set2);
+    for (auto element : unionSet.GetElements())
+    {
+        cout << element << " ";
+    }
+    cout << endl;
+    cout << "Difference: ";
+    Set differenceSet = set1.Difference(set2);
+    for (auto element : differenceSet.GetElements())
+    {
+        cout << element << " ";
+    }
+    cout << endl;
+    cout << "Subset: " << (set1.Subset(set2) ? "true" : "false") << std::endl;
+    return 0;
+}

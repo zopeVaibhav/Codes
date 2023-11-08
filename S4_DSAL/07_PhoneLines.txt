@@ -1,0 +1,72 @@
+#include <iostream>
+#include <climits>
+using namespace std;
+#define MAX 100
+int graph[MAX][MAX]; // 2D array
+int n;               // number of vertices
+// Function to find the minimum key index
+
+
+int findMinKey(int key[], bool mstSet[])
+{
+    int minKey = INT_MAX;
+    int minIndex;
+    for (int i = 0; i < n; i++)
+    {
+        if (!mstSet[i] && key[i] < minKey)
+        {
+            minKey = key[i];
+            minIndex = i;
+        }
+    }
+    return minIndex;
+}
+// Function for Minimum Spanning Tree
+void MST()
+{
+    int parent[n], key[n]; // Created parent and key array
+    bool mstSet[n];        // Created a minimum spanning tree array
+    for (int i = 0; i < n; i++)
+    {
+        mstSet[i] = false;
+        key[i] = INT_MAX;
+        // In this, we initialize the bool visited array to false and key to maximum
+    }
+    key[0] = 0;
+    parent[0] = -1;
+
+    for (int i = 0; i < n - 1; i++)
+    {
+        int u = findMinKey(key, mstSet);
+        mstSet[u] = true;
+        for (int v = 0; v < n; v++)
+        {
+            if (graph[u][v] && !mstSet[v] && graph[u][v] < key[v])
+            {
+                parent[v] = u;
+                key[v] = graph[u][v];
+            }
+        }
+    }
+    cout << "\nMinimum Spanning Tree: ";
+    for (int i = 1; i < n; i++)
+    {
+        cout << "\n"
+             << parent[i] + 1 << " - " << i + 1 << "\t" << graph[parent[i]][i];
+    }
+}
+
+int main()
+{
+    cout << "Enter the number of offices: ";
+    cin >> n;
+    cout << "Enter the cost of phone lines between each pair of offices:"
+         << endl;
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+            cin >> graph[i][j];
+    }
+    MST();
+    return 0;
+}
