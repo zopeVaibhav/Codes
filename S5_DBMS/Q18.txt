@@ -1,0 +1,65 @@
+operations 
+Select data with the index
+Explain query execution plan:
+Optimize ORDER BY and GROUP BY:
+Full-Text Search:
+Updating records with the index:
+Deleting records with the index:
+
+
+
+CREATE TABLE Employee (
+    emp_id INT PRIMARY KEY,
+    emp_name VARCHAR(50),
+    emp_salary DECIMAL(10, 2),
+    emp_department VARCHAR(50)
+);
+
+
+INSERT INTO Employee (emp_id, emp_name, emp_salary, emp_department)
+VALUES
+    (1, 'John Doe', 60000.00, 'HR'),
+    (2, 'Jane Smith', 55000.00, 'Marketing'),
+    (3, 'Bob Johnson', 70000.00, 'Sales'),
+    (4, 'Alice Brown', 62000.00, 'Engineering');
+
+CREATE INDEX idx_emp_name ON Employee (emp_name);
+
+SELECT * FROM Employee WHERE emp_name = 'John Doe';
+
+EXPLAIN SELECT * FROM Employee WHERE emp_name = 'John Doe';
+
+SELECT emp_department, AVG(emp_salary) FROM Employee GROUP BY emp_department;
+
+SHOW INDEX FROM Employee;
+
+ALTER TABLE Employee
+ADD FULLTEXT INDEX idx_emp_name_new (emp_name);
+
+
+
+
+SELECT * FROM Employee WHERE MATCH(emp_name) AGAINST('John' IN NATURAL LANGUAGE MODE);
+
+UPDATE Employee SET emp_salary = 60000 WHERE emp_name = 'John Doe';
+
+DELETE FROM Employee WHERE emp_name = 'John Doe';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

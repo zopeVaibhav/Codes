@@ -1,0 +1,86 @@
+sudo mysql;
+
+CREATE DATABASE employee;
+
+USE employee;
+
+CREATE TABLE departments (
+    department_id INT PRIMARY KEY,
+    department_name VARCHAR(255),
+    location VARCHAR(255)
+);
+
+CREATE TABLE employees (
+    employee_id INT PRIMARY KEY,
+    employee_name VARCHAR(255),
+    department_id INT,
+    manager_id INT,
+    salary DECIMAL(10, 2),
+    hire_date DATE
+);
+
+INSERT INTO departments (department_id, department_name, location)
+VALUES
+    (1, 'Sales', 'Pune'),
+    (2, 'Marketing', 'Nashik'),
+    (3, 'Finance', 'Gujrat'),
+    (4, 'Engineering', 'Bangalore'),
+    (5, 'HR', 'Hyderabad');
+
+INSERT INTO employees (employee_id, employee_name, department_id, manager_id, salary, hire_date)
+VALUES
+    (1, 'Vedant Gorule', 1, 5, 60000.00, '2020-03-15'),
+    (2, 'Pranav Khandagle', 2, 4, 75000.00, '2019-06-20'),
+    (3, 'Shreeyash Garde', 1, 5, 55000.00, '2021-01-10'),
+    (4, 'Mayur Thakur', 4, 7, 80000.00, '2018-04-05'),
+    (5, 'Aniket Kaygude', 3, 6, 70000.00, '2022-05-30'),
+    (6, 'Mehul Ligade', 1, 5, 62000.00, '2020-08-12'),
+    (7, 'Pranav Badhe', 4, 7, 85000.00, '2017-12-18'),
+    (8, 'Sujal Kapale', 3, 6, 72000.00, '2019-11-25'),
+    (9, 'Avadhut Kulkarni', 2, 4, 72000.00, '2021-07-03'),
+    (10, 'Aditya Amup', 3, 6, 71000.00, '2022-02-28');
+
+SELECT e.employee_name, d.department_name
+FROM employees e
+CROSS JOIN departments d;
+
+SELECT e.employee_name AS employee, m.employee_name AS manager
+FROM employees e
+CROSS JOIN employees m
+WHERE e.employee_id <> m.employee_id;
+
+SELECT e.employee_name, d.department_name, e.salary
+FROM employees e
+CROSS JOIN departments d;
+
+SELECT d.department_name, d.location
+FROM departments d
+CROSS JOIN departments d2;
+
+SELECT e1.employee_name AS employee1, e2.employee_name AS employee2
+FROM employees e1
+CROSS JOIN employees e2
+WHERE e1.employee_id < e2.employee_id;
+
+SELECT d.department_name, e.employee_name, e.salary
+FROM departments d
+CROSS JOIN (SELECT MAX(salary) AS max_salary FROM employees GROUP BY department_id) max_salaries
+INNER JOIN employees e ON e.salary = max_salaries.max_salary;
+
+SELECT e.employee_name, d.department_name
+FROM employees e
+CROSS JOIN departments d;
+
+SELECT e.employee_name, d.department_name
+FROM employees e
+CROSS JOIN departments d
+WHERE d.department_name = 'Sales';
+
+SELECT e.employee_name, d.department_name
+FROM employees e
+CROSS JOIN departments d;
+
+SELECT e.employee_name, d.department_name, d.location
+FROM employees e
+CROSS JOIN departments d
+WHERE d.department_name = 'Sales' AND d.location = 'Pune';

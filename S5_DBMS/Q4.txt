@@ -1,0 +1,88 @@
+sudo mysql;
+
+CREATE DATABASE employee;
+
+USE employee;
+
+CREATE TABLE departments (
+    department_id INT PRIMARY KEY,
+    department_name VARCHAR(255),
+    location VARCHAR(255)
+);
+
+CREATE TABLE employees (
+    employee_id INT PRIMARY KEY,
+    employee_name VARCHAR(255),
+    department_id INT,
+    manager_id INT,
+    salary DECIMAL(10, 2),
+    hire_date DATE
+);
+
+INSERT INTO departments (department_id, department_name, location)
+VALUES
+    (1, 'Sales', 'New York'),
+    (2, 'Marketing', 'Los Angeles'),
+    (3, 'Finance', 'Chicago'),
+    (4, 'Engineering', 'San Francisco'),
+    (5, 'HR', 'Boston');
+
+INSERT INTO employees (employee_id, employee_name, department_id, manager_id, salary, hire_date)
+VALUES
+    (1, 'John Doe', 1, 5, 60000.00, '2020-03-15'),
+    (2, 'Jane Smith', 2, 4, 75000.00, '2019-06-20'),
+    (3, 'Bob Johnson', 1, 5, 55000.00, '2021-01-10'),
+    (4, 'Alice Brown', 4, 7, 80000.00, '2018-04-05'),
+    (5, 'Chris Lee', 3, 6, 70000.00, '2022-05-30'),
+    (6, 'Eva White', 1, 5, 62000.00, '2020-08-12'),
+    (7, 'David Clark', 4, 7, 85000.00, '2017-12-18'),
+    (8, 'Grace Turner', 3, 6, 72000.00, '2019-11-25'),
+    (9, 'Frank Hall', 2, 4, 72000.00, '2021-07-03'),
+    (10, 'Sarah Adams', 3, 6, 71000.00, '2022-02-28');
+
+SELECT departments.department_id, departments.department_name, employees.employee_name
+FROM departments
+RIGHT JOIN employees ON departments.department_id = employees.department_id;
+
+SELECT departments.department_id, departments.department_name, employees.employee_name
+FROM departments
+RIGHT JOIN employees ON departments.department_id = employees.department_id
+WHERE departments.location = 'New York';
+
+SELECT departments.department_id, departments.department_name
+FROM departments
+RIGHT JOIN employees ON departments.department_id = employees.department_id
+WHERE employees.employee_id IS NULL;
+
+SELECT d.department_id, d.department_name, e.employee_name
+FROM departments d
+RIGHT JOIN employees e ON d.department_id = e.department_id;
+
+SELECT d.department_id, d.department_name, e.employee_name
+FROM departments d
+RIGHT JOIN employees e ON d.department_id = e.department_id AND e.salary > 70000.00;
+
+SELECT d.department_id, d.department_name, SUM(e.salary) AS total_salary
+FROM departments d
+RIGHT JOIN employees e ON d.department_id = e.department_id
+GROUP BY d.department_id, d.department_name;
+
+SELECT e.employee_id, e.employee_name, m.employee_name AS manager_name
+FROM employees e
+RIGHT JOIN employees m ON e.manager_id = m.employee_id;
+
+SELECT d.department_id, d.department_name, avg.avg_salary
+FROM departments d
+RIGHT JOIN (SELECT department_id, AVG(salary) AS avg_salary FROM employees GROUP BY department_id) avg
+ON d.department_id = avg.department_id
+WHERE avg.avg_salary > 70000.00;
+
+SELECT d.department_id, d.department_name, e.employee_name, e.hire_date
+FROM departments d
+RIGHT JOIN employees e ON d.department_id = e.department_id
+WHERE e.hire_date > '2021-01-01';
+
+SELECT d.department_id, d.department_name, e.employee_name
+FROM departments d
+RIGHT JOIN employees e ON d.department_id = e.department_id
+LIMIT 5;

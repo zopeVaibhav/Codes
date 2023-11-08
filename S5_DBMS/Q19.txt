@@ -1,0 +1,18 @@
+db.createCollection("journal");
+db.journal.insertOne({ 'id': 1, 'book_name': 'OOP', 'amt': 400, 'status': 'Available' });
+db.journal.insertOne({ 'id': 2, 'book_name': 'java', 'amt': 500, 'status': 'Not Available' });
+db.journal.insertOne({ 'id': 3, 'book_name': 'cpp', 'amt': 600, 'status': 'Available' });
+db.journal.insertOne({ 'id': 4, 'book_name': 'web development', 'amt': 700, 'status': 'Available' });
+db.journal.insertOne({ 'id': 5, 'book_name': 'cloud', 'amt': 700, 'status': 'Available' });
+
+var mapFunction = function () {
+    emit(this.book_name, this.amt);
+};
+
+var reduceFunction = function (key, values) {
+    return Array.sum(values);
+};
+
+db.journal.mapReduce(mapFunction, reduceFunction, { "out": "new" });
+
+db.new.find();

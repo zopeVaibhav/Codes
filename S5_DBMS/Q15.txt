@@ -1,0 +1,17 @@
+ use person
+ db.createCollection('Student');
+db.Student.insertOne({'Rno':'1','Name':'Avadhut','Class':'TE COMP'});
+db.Student.insertOne({'Rno':'2','Name':'Sujal','Class':'TE COMP'});
+ db.Student.insertOne({'Rno':'3','Name':'omkar','Class':'TE COMP'});
+ db.Student.find();
+ 
+ db.Student.update({'Name':'omkar'},{$set:{'Name':'Nishad'}});
+db.Student.find();
+ db.Student.remove({'Rno':'1'});
+ db.Student.insertOne({'Rno':'4','Name':'Avadhut','Class':'TE COMP'});
+db.Student.insertOne({'Rno':'5','Name':'OM','Class':'TE COMP'});
+db.Student.insertOne({'Rno':'6','Name':'Soham','Class':'TE COMP'});
+db.Student.insertOne({'Rno':'7','Name':'Vaibhav','Class':'TE COMP'});
+ db.Student.find({$and:[{'Name':'Sujal'},{'Rno':'2'}]});
+db.Student.find({$or:[{'Name':'Sujal'},{'Rno':'2'}]});
+ db.Student.find({$nor:[{'Name':'Sujal'},{'Rno':'2'}]});

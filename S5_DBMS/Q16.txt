@@ -1,0 +1,80 @@
+-- Create the students table with a primary key constraint
+CREATE TABLE students (
+    student_id INT PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50)
+);
+
+-- Create the courses table with a unique key constraint
+CREATE TABLE courses (
+    course_id INT UNIQUE,
+    course_name VARCHAR(100)
+);
+
+-- Create the student_courses table with foreign key constraints
+CREATE TABLE student_courses (
+    student_course_id INT PRIMARY KEY,
+    student_id INT,
+    course_id INT,
+    FOREIGN KEY (student_id) REFERENCES students(student_id),
+    FOREIGN KEY (course_id) REFERENCES courses(course_id)
+);
+
+-- Create the teachers table
+CREATE TABLE teachers (
+    teacher_id INT PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50)
+);
+
+-- Insert sample data into the tables
+INSERT INTO students (student_id, first_name, last_name) VALUES
+    (1, 'John', 'Doe'),
+    (2, 'Jane', 'Smith'),
+    (3, 'Alice', 'Johnson');
+
+INSERT INTO courses (course_id, course_name) VALUES
+    (1, 'Mathematics'),
+    (2, 'Science'),
+    (3, 'History');
+
+INSERT INTO student_courses (student_course_id, student_id, course_id) VALUES
+    (1, 1, 1),
+    (2, 1, 2),
+    (3, 2, 2),
+    (4, 3, 3);
+
+INSERT INTO teachers (teacher_id, first_name, last_name) VALUES
+    (1, 'Professor', 'Smith'),
+    (2, 'Dr.', 'Johnson');
+
+-- Perform different types of joins
+
+-- Inner Join: Retrieve a list of students and the courses they are enrolled in.
+SELECT students.first_name, students.last_name, courses.course_name
+FROM students
+JOIN student_courses ON students.student_id = student_courses.student_id
+JOIN courses ON student_courses.course_id = courses.course_id;
+
+-- Left Join: Retrieve a list of all courses and the students enrolled in each course (including courses with no students).
+SELECT courses.course_name, students.first_name, students.last_name
+FROM courses
+LEFT JOIN student_courses ON courses.course_id = student_courses.course_id
+LEFT JOIN students ON student_courses.student_id = students.student_id;
+
+-- Right Join: Retrieve a list of students and the courses they are enrolled in (including students with no courses).
+SELECT students.first_name, students.last_name, courses.course_name
+FROM students
+RIGHT JOIN student_courses ON students.student_id = student_courses.student_id
+RIGHT JOIN courses ON student_courses.course_id = courses.course_id;
+
+-- Full Outer Join (emulated using UNION): Retrieve a list of all students and all courses, showing student-course relationships.
+SELECT students.first_name, students.last_name, courses.course_name
+FROM students
+LEFT JOIN student_courses ON students.student_id = student_courses.student_id
+LEFT JOIN courses ON student_courses.course_id = courses.course_id
+UNION
+SELECT students.first_name, students.last_name, courses.course_name
+FROM students
+RIGHT JOIN student_courses ON students.student_id = student_courses.student_id
+RIGHT JOIN courses ON student_courses.course_id = courses.course_id;

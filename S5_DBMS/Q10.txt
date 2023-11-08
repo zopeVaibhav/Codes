@@ -1,0 +1,85 @@
+sudo mysql;
+
+DROP DATABASE IF EXISTS student;
+
+CREATE DATABASE student;
+
+USE student;
+
+CREATE TABLE marks(roll_no INT, name VARCHAR(20), total_marks VARCHAR(20));
+CREATE TABLE result(roll_no INT, name VARCHAR(20), class VARCHAR(20));
+
+INSERT INTO marks VALUES('1', 'Vedant', '1400');
+INSERT INTO marks VALUES('2', 'Garde', '980');
+INSERT INTO marks VALUES('3', 'Pranav', '880');
+INSERT INTO marks VALUES('4', 'Gidde', '820');
+INSERT INTO marks VALUES('5', 'Mayur', '740');
+
+DELIMITER //
+CREATE PROCEDURE proc_result(IN marks INT, OUT class CHAR(20))
+BEGIN
+IF (marks < 1500 && marks > 990) THEN
+	SET class = 'DISTINCTION';
+END IF;
+IF (marks < 989 && marks > 890) THEN
+	SET class = 'FIRST CLASS';
+END IF;
+IF (marks < 889 && marks > 825) THEN
+	SET class = 'HIGHER SECOND CLASS';
+END IF;
+END;
+//
+
+CREATE FUNCTION final_result(R1 INT)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+DECLARE fmarks INT;
+DECLARE grade VARCHAR(20);
+DECLARE stud_name VARCHAR(20); 
+SELECT marks.total_marks, marks.name INTO fmarks, stud_name FROM marks WHERE marks.roll_no = R1;
+CALL proc_result(fmarks, @grade);
+INSERT INTO result VALUES (R1, stud_name, @grade);
+RETURN R1;
+END;
+//
+
+SELECT final_result(2);//
+
+SELECT final_result(3);//
+
+SELECT final_result(4);//
+
+SELECT final_result(5);//
+
+SELECT * FROM result;//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

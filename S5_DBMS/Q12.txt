@@ -1,0 +1,50 @@
+
+CREATE TABLE Library (
+    Library_ID INT AUTO_INCREMENT PRIMARY KEY,
+    Book_Title VARCHAR(255),
+    Author VARCHAR(255)
+);
+
+CREATE TABLE Library_Audit (
+    Audit_ID INT AUTO_INCREMENT PRIMARY KEY,
+    Library_ID INT,
+    Book_Title VARCHAR(255),
+    Author VARCHAR(255),
+    Action VARCHAR(10),
+    Audit_Date TIMESTAMP
+);
+
+
+DELIMITER //
+CREATE TRIGGER Library_Update_Audit
+BEFORE UPDATE ON Library
+FOR EACH ROW
+BEGIN
+    INSERT INTO Library_Audit (Library_ID, Book_Title, Author, Action, Audit_Date)
+    VALUES (OLD.Library_ID, OLD.Book_Title, OLD.Author, 'UPDATE', NOW());
+END;
+//
+
+CREATE TRIGGER Library_Delete_Audit
+BEFORE DELETE ON Library
+FOR EACH ROW
+BEGIN
+    INSERT INTO Library_Audit (Library_ID, Book_Title, Author, Action, Audit_Date)
+    VALUES (OLD.Library_ID, OLD.Book_Title, OLD.Author, 'DELETE', NOW());
+END;
+//
+DELIMITER ;
+
+
+INSERT INTO Library (Book_Title, Author) VALUES ('Book A', 'Author X');
+
+UPDATE Library SET Book_Title = 'Updated Book A' WHERE Library_ID = 1;
+
+SELECT * FROM Library_Audit;
+
+INSERT INTO Library (Book_Title, Author) VALUES ('Book B', 'Author Y');
+
+DELETE FROM Library WHERE Library_ID = 2;
+
+SELECT * FROM Library_Audit;
+

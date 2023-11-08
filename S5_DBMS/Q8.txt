@@ -1,0 +1,55 @@
+CREATE TABLE Fine (
+    fine_id INT PRIMARY KEY AUTO_INCREMENT,
+    roll_no INT,
+    fine_date DATE,
+    amount INT
+);
+
+CREATE TABLE Borrower (
+    roll_no INT PRIMARY KEY,
+    name VARCHAR(50),
+    DOI DATE,
+    book_name VARCHAR(50),
+    status VARCHAR(50)
+);
+
+INSERT INTO Borrower (roll_no, name, DOI, book_name, status)
+VALUES
+    (1, 'John', '2023-01-01', 'book1', 'issued'),
+    (2, 'Alice', '2023-01-15', 'book2', 'issued'),
+    (3, 'Bob', '2023-02-01', 'book3', 'issued'),
+    (4, 'Eve', '2023-02-15', 'book4', 'issued'),
+    (5, 'Charlie', '2023-03-01', 'book5', 'returned');
+
+SELECT * FROM Fine;
+SELECT * FROM Borrower;
+
+DELIMITER //
+
+CREATE PROCEDURE get_fine(roll_new INT, book_name VARCHAR(20))
+BEGIN
+    DECLARE X INT;
+    SELECT DATEDIFF(CURDATE(), DOI) INTO X FROM Borrower WHERE roll_no = roll_new AND book_name = book_name;
+    
+    IF X IS NULL THEN
+        SELECT 'NOT FOUND' AS Result;
+    ELSEIF X > 15 AND X < 30 THEN
+        INSERT INTO Fine (roll_no, fine_date, amount) VALUES (roll_new, CURDATE(), X * 5);
+        UPDATE Borrower SET status = 'returned' WHERE roll_no = roll_new AND book_name = book_name;
+        SELECT 'Fine Added' AS Result;
+    ELSEIF X >= 30 THEN
+        INSERT INTO Fine (roll_no, fine_date, amount) VALUES (roll_new, CURDATE(), X * 50);
+        UPDATE Borrower SET status = 'returned' WHERE roll_no = roll_new AND book_name = book_name;
+        SELECT 'Fine Added (Higher)' AS Result;
+    ELSE
+        UPDATE Borrower SET status = 'returned' WHERE roll_no = roll_new AND book_name = book_name;
+        SELECT 'Book Returned' AS Result;
+    END IF;
+END;
+//
+
+DELIMITER ;
+
+CALL get_fine(1, 'book1');
+
+SELECT * FROM Fine;

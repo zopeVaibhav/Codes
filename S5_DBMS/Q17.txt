@@ -1,0 +1,15 @@
+use computer
+ db.createCollection("Website");
+db.Website.insertOne({'Roll_No':'1','Name':'Sneha','Amount':1000});
+ db.Website.insertOne({'Roll_No':'2','Name':'Avadhut','Amount':10000});
+db.Website.insertOne({'Roll_No':'3','Name':'Omkar','Amount':20000});
+ db.Website.insertOne({'Roll_No':'4','Name':'Sujal','Amount':30000});
+ db.Website.insertOne({'Roll_No':'4','Name':'Sujal','Amount':30000});
+db.Website.insertOne({'Roll_No':'4','Name':'Sujal','Amount':30000});
+ db.Website.insertOne({'Roll_No':'5','Name':'Nishad','Amount':40000});
+db.Website.insertOne({'Roll_No':'5','Name':'Nishad','Amount':40000});
+ db.Website.aggregate({$group:{_id:"$Name","total":{$sum:"$Amount"}}});
+ db.Website.aggregate({$group:{_id:"$Name","total":{$avg:"$Amount"}}});
+ db.Website.aggregate({$group:{_id:"$Name","total":{$min:"$Amount"}}});
+db.Website.aggregate({$group:{_id:"$Name","total":{$max:"$Amount"}}});
+db.Website.insertOne({'Roll_No':'9','Name':'Sujal','Amount':350000});db.Website.aggregate([ { $group: { _id: "$Name", total: { $max: "$Amount" } } }] );

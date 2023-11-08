@@ -1,0 +1,85 @@
+CREATE TABLE departments (
+    department_id INT PRIMARY KEY,
+    department_name VARCHAR(255),
+    location VARCHAR(255)
+);
+
+CREATE TABLE employees (
+    employee_id INT PRIMARY KEY,
+    employee_name VARCHAR(255),
+    department_id INT,
+    manager_id INT,
+    salary DECIMAL(10, 2),
+    hire_date DATE
+);
+
+INSERT INTO departments (department_id, department_name, location)
+VALUES
+    (1, 'Sales', 'Pune'),
+    (2, 'Marketing', 'Nashik'),
+    (3, 'Finance', 'Gujrat'),
+    (4, 'Engineering', 'Bangalore'),
+    (5, 'HR', 'Hyderabad');
+
+INSERT INTO employees (employee_id, employee_name, department_id, manager_id, salary, hire_date)
+VALUES
+    (1, 'Vedant Gorule', 1, 5, 60000.00, '2020-03-15'),
+    (2, 'Pranav Khandagle', 2, 4, 75000.00, '2019-06-20'),
+    (3, 'Shreeyash Garde', 1, 5, 55000.00, '2021-01-10'),
+    (4, 'Mayur Thakur', 4, 7, 80000.00, '2018-04-05'),
+    (5, 'Aniket Kaygude', 3, 6, 70000.00, '2022-05-30'),
+    (6, 'Mehul Ligade', 1, 5, 62000.00, '2020-08-12'),
+    (7, 'Pranav Badhe', 4, 7, 85000.00, '2017-12-18'),
+    (8, 'Sujal Kapale', 3, 6, 72000.00, '2019-11-25'),
+    (9, 'Avadhut Kulkarni', 2, 4, 72000.00, '2021-07-03'),
+    (10, 'Aditya Amup', 3, 6, 71000.00, '2022-02-28');
+
+SELECT employees.employee_id, employees.employee_name, departments.department_name
+FROM employees
+LEFT JOIN departments ON employees.department_id = departments.department_id;
+
+SELECT employees.employee_id, employees.employee_name, departments.department_name
+FROM employees
+LEFT JOIN departments ON employees.department_id = departments.department_id
+WHERE departments.department_name = 'Sales';
+
+SELECT employees.employee_id, employees.employee_name
+FROM employees
+LEFT JOIN departments ON employees.department_id = departments.department_id
+WHERE departments.department_id IS NULL;
+
+SELECT e.employee_id, e.employee_name, d.department_name
+FROM employees e
+LEFT JOIN departments d ON e.department_id = d.department_id;
+
+SELECT e.employee_id, e.employee_name, d.department_name
+FROM employees e
+LEFT JOIN departments d ON e.department_id = d.department_id AND d.location = 'Pune';
+
+SELECT d.department_id, d.department_name, SUM(e.salary) AS total_salary
+FROM departments d
+LEFT JOIN employees e ON d.department_id = e.department_id
+GROUP BY d.department_id, d.department_name;
+
+SELECT e.employee_id, e.employee_name, m.employee_name AS manager_name
+FROM employees e
+LEFT JOIN employees m ON e.manager_id = m.employee_id;
+
+SELECT e.employee_id, e.employee_name, e.salary
+FROM employees e
+LEFT JOIN (SELECT AVG(salary) AS avg_salary FROM employees) avg
+ON e.salary > avg.avg_salary;
+
+SELECT e.employee_id, e.employee_name, e.hire_date
+FROM employees e
+LEFT JOIN employees hired
+ON e.employee_id = hired.employee_id
+AND hired.hire_date < '2022-01-01';
+
+SELECT e.employee_id, e.employee_name, d.department_name
+FROM employees e
+LEFT JOIN departments d ON e.department_id = d.department_id
+LIMIT 10;
+
+
+

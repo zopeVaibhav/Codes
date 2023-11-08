@@ -1,0 +1,24 @@
+CREATE TABLE areas(radius decimal(10,2), area decimal(10,2));
+
+DELIMITER //
+CREATE PROCEDURE InsertAreaData()
+BEGIN
+    DECLARE r DECIMAL(10, 2);
+    DECLARE a DECIMAL(10, 2);
+    DECLARE radius_loop INT;
+    
+    SET radius_loop = 5;
+    WHILE radius_loop <= 9 DO
+        SET r = radius_loop;
+        SET a = 3.14159265359 * POWER(r, 2);  -- Calculate the area of the circle (pi * r^2)
+        
+        INSERT INTO areas (radius, area) VALUES (r, a);
+        
+        SET radius_loop = radius_loop + 1;
+    END WHILE;
+END;
+//
+DELIMITER ;
+
+CALL InsertAreaData();
+SELECT * FROM areas;

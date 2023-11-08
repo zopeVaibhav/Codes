@@ -1,0 +1,43 @@
+CREATE TABLE Employee (
+    employee_id INT AUTO_INCREMENT,
+    name VARCHAR(255),
+    department VARCHAR(255),
+    salary DECIMAL(10, 2),
+    PRIMARY KEY (employee_id)
+);
+
+INSERT INTO Employee (name, department, salary)
+VALUES
+    ('John', 'HR', 55000.00),
+    ('Alice', 'HR', 62000.00),
+    ('Bob', 'Engineering', 75000.00),
+    ('Carol', 'Engineering', 72000.00),
+    ('Dave', 'Sales', 58000.00),
+    ('Eve', 'Sales', 63000.00);
+
+INSERT INTO Employee (name, department, salary)
+VALUES
+    ('John', 'HR', 55000),
+    ('Alice', 'HR', 62000),
+    ('Bob', 'Engineering', 75000),
+    ('Carol', 'Engineering', 72000),
+    ('Dave', 'Sales', 58000),
+    ('Eve', 'Sales', 63000);
+SELECT department, AVG(salary) AS avg_salary
+FROM Employee
+WHERE salary > 50000.00
+GROUP BY department
+HAVING avg_salary > 6000.00
+ORDER BY avg_salary DESC;
+
+
+
+
+
+
+
+
+
+
+
+
