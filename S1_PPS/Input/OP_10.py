@@ -1,0 +1,1 @@
+f=open("10_text.txt")
