@@ -1,0 +1,123 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <unordered_map>
+#include <omp.h>
+using namespace std;
+
+struct Node {
+    int data;
+    vector<Node*> children;
+};
+
+// Function to perform parallel BFS
+void parallel_BFS(Node* root) {
+    if (!root) return;
+
+    queue<Node*> q;
+    q.push(root);
+
+    while (!q.empty()) {
+        int level_size = q.size();
+        vector<Node*> current_level;
+
+        for (int i = 0; i < level_size; ++i) {
+            current_level.push_back(q.front());
+            q.pop();
+        }
+
+        vector<Node*> next_level;
+
+        #pragma omp parallel for
+        for (int i = 0; i < current_level.size(); ++i) {
+            Node* current = current_level[i];
+
+            #pragma omp critical
+            cout << current->data << " ";
+
+            #pragma omp critical
+            for (int j = 0; j < current->children.size(); ++j) {
+                next_level.push_back(current->children[j]);
+            }
+        }
+
+        for (Node* node : next_level) {
+            q.push(node);
+        }
+    }
+}
+
+int main() {
+    int n;
+    cout << "Enter number of nodes: ";
+    cin >> n;
+
+    unordered_map<int, Node*> nodes;
+
+    // Create nodes
+    cout << "Enter values for " << n << " nodes:\n";
+    for (int i = 0; i < n; ++i) {
+        int val;
+        cin >> val;
+        nodes[val] = new Node{val};
+    }
+
+    int root_val;
+    cout << "Enter root node value: ";
+    cin >> root_val;
+
+    cout << "Enter children for each node (enter -1 to stop a node's children):\n";
+    for (int i = 0; i < n; ++i) {
+        int parent_val;
+        cout << "Parent node value: ";
+        cin >> parent_val;
+
+        cout << "Enter children of " << parent_val << ": ";
+        while (true) {
+            int child_val;
+            cin >> child_val;
+            if (child_val == -1) break;
+            nodes[parent_val]->children.push_back(nodes[child_val]);
+        }
+    }
+
+    cout << "\nParallel BFS Output: ";
+    parallel_BFS(nodes[root_val]);
+    cout << endl;
+
+    return 0;
+}
+
+/*
+
+sample input 
+Enter number of nodes: 7
+Enter values for 7 nodes:
+10 20 30 40 50 60 70
+Enter root node value: 10
+Enter children for each node (enter -1 to stop a node's children):
+Parent node value: 10
+Enter children of 10: 20 30 40 -1
+Parent node value: 20
+Enter children of 20: 50 60 -1
+Parent node value: 30
+Enter children of 30: -1
+Parent node value: 40
+Enter children of 40: 70 -1
+Parent node value: 50
+Enter children of 50: -1
+Parent node value: 60
+Enter children of 60: -1
+Parent node value: 70
+Enter children of 70: -1
+
+          10
+       /   |   \
+     20   30   40
+    /  \        \
+  50   60       70
+
+Output
+Parallel BFS Output: 10 20 30 40 50 60 70 
+
+*/

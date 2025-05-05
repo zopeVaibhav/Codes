@@ -1,0 +1,83 @@
+#include <iostream>
+#include <chrono>
+#include <omp.h>
+#include <random>
+using namespace std;
+using namespace std::chrono;
+
+void bubble_seq(int*, int);
+void bubble_parallel(int*, int);
+void swap(int&, int&);
+
+void bubble_seq(int* a, int n){
+    for (int i = 0; i < n; i++){
+        for (int j = i % 2; j < n - 1; j += 2){
+            if (a[j] > a[j + 1]){
+                swap(a[j], a[j + 1]);
+            }
+        }
+    }
+}
+
+void bubble_parallel(int* a, int n){
+    for (int i = 0; i < n; i++){
+        int first = i % 2;
+        #pragma omp parallel for shared(a, first)
+        for (int j = first; j < n - 1; j += 2){
+            if (a[j] > a[j + 1]){
+                swap(a[j], a[j + 1]);
+            }
+        }
+    }
+}
+
+void swap(int &a, int &b){
+    int temp = a;
+    a = b;
+    b = temp;
+}
+
+int main(){
+    int n;
+    cout << "Enter total number of elements: ";
+    cin >> n;
+
+    int* original = new int[n];
+    
+    for (int i = 0; i < n; i++) {
+        cin >> original[i];
+    }
+
+    // for (int i = 0; i < n; i++) {
+    //     original[i] = rand() % 10000 + 1; 
+    // }
+    
+    int* a_seq = new int[n];
+    int* a_par = new int[n];
+    copy(original, original + n, a_seq);
+    copy(original, original + n, a_par);
+    
+    auto start_seq = high_resolution_clock::now();
+    bubble_seq(a_seq, n);
+    auto end_seq = high_resolution_clock::now();
+
+    auto start_par = high_resolution_clock::now();
+    bubble_parallel(a_par, n);
+    auto end_par = high_resolution_clock::now();
+
+    auto time_seq = duration_cast<microseconds>(end_seq - start_seq).count();
+    auto time_par = duration_cast<microseconds>(end_par - start_par).count();
+
+    cout << "Sequential Time: " << time_seq << " microsecond" << endl;
+    cout << "Parallel Time: " << time_par << " microseconds" << endl;
+
+    //for(int i=0; i<n; i++){
+    //    cout << a_seq[i] << " ";
+    //}
+ 
+
+    delete[] original;
+    delete[] a_seq;
+    delete[] a_par;
+    return 0;
+}

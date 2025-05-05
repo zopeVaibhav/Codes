@@ -1,0 +1,113 @@
+#include <iostream>
+#include <chrono>
+#include <omp.h>
+#include <random>
+#include <algorithm> // For std::copy
+
+using namespace std;
+using namespace std::chrono;
+
+void mergesort_seq(int*, int, int);
+void mergesort_parallel(int*, int, int);
+void merge(int*, int, int, int, int);
+
+void mergesort_seq(int* a, int i, int j) {
+    if (i < j) {
+        int mid = (i + j) / 2;
+        mergesort_seq(a, i, mid);
+        mergesort_seq(a, mid + 1, j);
+        merge(a, i, mid, mid + 1, j);
+    }
+}
+
+void mergesort_parallel(int* a, int i, int j) {
+    if (i < j) {
+        int mid = (i + j) / 2;
+        
+        #pragma omp parallel sections
+        {
+            #pragma omp section
+            {
+                mergesort_parallel(a, i, mid);
+            }
+
+            #pragma omp section
+            {
+                mergesort_parallel(a, mid + 1, j);
+            }
+        }
+        merge(a, i, mid, mid + 1, j);
+    }
+}
+
+void merge(int* a, int i1, int j1, int i2, int j2) {
+    int size = j2 - i1 + 1;
+    int* temp = new int[size]; 
+    int i = i1, j = i2, k = 0;
+
+    while (i <= j1 && j <= j2) {
+        if (a[i] < a[j]) {
+            temp[k++] = a[i++];
+        } else {
+            temp[k++] = a[j++];
+        }
+    }
+
+    while (i <= j1) temp[k++] = a[i++];
+    while (j <= j2) temp[k++] = a[j++];
+
+    for (i = i1, k = 0; i <= j2; i++, k++) {
+        a[i] = temp[k];
+    }
+
+    delete[] temp;
+}
+
+int main() {
+    int n;
+    cout << "Enter total number of elements: ";
+    cin >> n;
+
+    int* original = new int[n];
+    
+    // Random input for array elements
+    for (int i = 0; i < n; i++) {
+        cin >> original[i];
+    }
+    
+    // for (int i = 0; i < n; i++) {
+    //     original[i] = rand() % 10000 + 1;
+    // }
+
+    int* a_seq = new int[n];
+    int* a_par = new int[n];
+    std::copy(original, original + n, a_seq); // Copy original to seq array
+    std::copy(original, original + n, a_par); // Copy original to par array
+
+    // Sequential mergesort time measurement
+    auto start_seq = high_resolution_clock::now();
+    mergesort_seq(a_seq, 0, n - 1);
+    auto end_seq = high_resolution_clock::now();
+    
+    // Parallel mergesort time measurement
+    auto start_par = high_resolution_clock::now();
+    mergesort_parallel(a_par, 0, n - 1);
+    auto end_par = high_resolution_clock::now();
+
+    // Calculate durations
+    auto time_seq = duration_cast<microseconds>(end_seq - start_seq).count();
+    auto time_par = duration_cast<microseconds>(end_par - start_par).count();
+
+    cout << "Sequential Time: " << time_seq << " microseconds" << endl;
+    cout << "Parallel Time: " << time_par << " microseconds" << endl;
+    
+    //for(int i=0; i<n; i++){
+    //    cout << a_seq[i] << " ";
+    //}
+
+    delete[] original;
+    delete[] a_seq;
+    delete[] a_par;
+
+    return 0;
+}
